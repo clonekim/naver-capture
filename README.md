@@ -1,30 +1,48 @@
 # SCR(Scroller)
 
-네이버 한자사전 웹페이지의 정보를 스크롤러 한다
+네이버 한자사전 웹페이지 스크롤러 툴임
+UI는 AngularJS 로 구성됨
 
 ## Usage
 
-### 소스 컴파일
+준비물
 
-* 서버 컴파일
-```
-> lein uberjar
-> cd target
-> java -jar scr.jar
-```
+0. jdk8
+1. node.js
+2. leiningen
 
-* 클라이언트 컴파일 (만약 클라이언트의 소스를 수정시에 아래와 같이 함)
-서버 컴파일보다 선행되어야 함
-```
-> gulp dist
-```
+### 클라이언트 소스(자바스크립트) 컴파일
 
-
-실행 시 (옵션없이 실행시) user.home 에 생성되지만
-아래 옵션과 같이 지정된 경로에 DB파일이 생성하게 할 수 있음.
+클라이언트의 소스를 수정 시 반드시 컴파일 할 것
 
 ```
-> java -jar scr.jar -DH2_URL=/home/clonekim
+ git dist
+```
+
+### 서버 소스 컴파일
+
+```
+ lein uberjar
+```
+
+### 실행
+
+fatjar(standalone)로 형태로 target 경로 이하에 xxx.jar 이름으로
+결과물이 생성됨
+
+DB파일은 현재 로그인 사용자 디렉로리에 db라는 디렉토리로 생성됨
+
+```
+ java -jar xxx.jar
+```
+
+서버 실행 후 http://127.0.0.1:5678로 접근한다
+
+db 디렉토리를 변경 시
+
+```
+ set H2_URL=C:/sample
+ java -jar xxx.jar
 ```
 
  
