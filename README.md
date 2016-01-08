@@ -23,7 +23,7 @@ UI는 AngularJS 로 구성됨
 소스 컴파일및 번들화 하기
 
 ```
- git dist
+ gulp dist
 ```
 
 ### 서버 소스 컴파일
