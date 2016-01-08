@@ -1,0 +1,28 @@
+<table class="table table-bordered">
+    <tr>
+    	<th>자음</th>
+        <th>단어</th>
+        <th>뜻</th>
+        <th>음</th>
+        <th>총획</th>
+        <th>부수</th>
+        <th>부수 뜻</th>
+        <th>부수 이름</th>
+        <th>부수 음독</th>
+        <th>부수 획수</th>
+        <th>*</th>
+    </tr>
+    <tr ng-repeat="i in results">
+    	<td>{{i.consonant}}</td>
+    	<td>{{i.letter}}</td>
+    	<td>{{i.theory}}</td>
+    	<td>{{i.read_pronun}}</td>
+    	<td>{{i.total_stroke}}</td>
+    	<td>{{i.bushou_letter}}</td>
+ 	    <td>{{i.bushou_mean}}</td>
+ 	    <td>{{i.bushou_name}}</td>
+ 	    <td>{{i.bushou_pronun}}</td>
+ 	    <td>{{i.bushou_stroke}}</td>
+ 	    <td> </td>
+    </tr>
+</table>

@@ -1,0 +1,38 @@
+
+<div class="modal-dialog" ng-init="batch={}">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3>Scroller Tool</h3>
+		</div>
+		<div class="modal-body">
+			<form class="form-horizontal">
+			
+				<div class="form-group">
+                	<label class="col-sm-3 control-label">consonant</label>
+	                <div class="col-sm-9">
+		                <select class="form-control" ng-model="batch.consonant">
+		                    <option value="{{n}}" ng-repeat="n in consonants">{{n}}</option>
+		                </select>
+		            </div>
+				</div>
+				
+				<div class="form-group">
+                	<label class="col-sm-3 control-label">url</label>
+	                <div class="col-sm-9">
+	                	<input type="text" ng-model="batch.url" class="form-control">
+	            	</div>
+				</div>
+				
+				<div class="col-sm-12 alert alert-success" ng-show="status != null">
+					{{status}}
+				</div>
+			</form>
+		</div>
+		<div class="modal-footer">
+			<a href="#/" class="btn btn-default" ng-click="addBatch(batch)"> Batch등록</a>
+			<a href="#/batch-stat" class="btn btn-default" > Batch 현황</a>
+			<a href="#/archives" class="btn btn-default" > 사전 보기</a>
+		</div>
+	</div>
+</div>
+
