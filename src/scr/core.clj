@@ -114,4 +114,5 @@
 
 (defn -main []
   (log/info "listen on port 5678")
+  (sql/init)
   (run-server #'app {:port 5678}))
