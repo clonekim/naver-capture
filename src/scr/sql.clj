@@ -3,17 +3,16 @@
             [clojure.tools.logging :as log])
   (:import (java.io File)))
 
-(defonce dic-dir (str (or (System/getProperty "user.home")
-                          (System/getenv "H2_URL")) "/db"))
+(defonce dic-dir (str (or (System/getenv "H2_URL") (System/getProperty "user.home")) (File/separator) "db"))
 
 (def db-spec {:classname "org.h2.Driver"
               :subprotocol "h2:file"
-              :subname (str dic-dir "/dic") })
+              :subname (str dic-dir (File/separator) "dic") })
 
 
 (defn init []
+  (log/debug "db path --" dic-dir)
   (log/debug "run ddl -- create table")
-  (log/debug "it will create db --" dic-dir)
   (if (.exists (File. dic-dir))
     (log/debug "already databases exists! -- skip")    
     (jdbc/db-do-commands db-spec 

@@ -4,13 +4,12 @@
   :license {:name "Eclipse Public License"
             :url "http://www.eclipse.org/legal/epl-v10.html"}
   :dependencies [[org.clojure/clojure "1.7.0"]
-                 [org.clojure/data.json "0.2.6"]
                  [org.clojure/core.async "0.2.374"]
                  [org.clojure/java.jdbc "0.4.2"]
                  [org.clojure/tools.logging "0.3.1"]
                  [http-kit "2.1.18"]
                  [ring/ring-core "1.4.0"]
-                 [ring/ring-json "0.4.0"]
+                 [ring/ring-json "0.4.0"]                 
                  [compojure "1.4.0"]
                  [hiccup "1.0.5"]
                  [org.jsoup/jsoup "1.8.3"]
@@ -23,6 +22,6 @@
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler scr.core/app
          :init scr.sql/init }
-  :uberjar-name "scr.jar"
+  :uberjar-name "start-0.1.4.jar"
   :profiles {:uberjar {:aot :all}}
   :main scr.core)

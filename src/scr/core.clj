@@ -3,6 +3,7 @@
   (:import (org.jsoup Jsoup)
            (java.net URLEncoder))
   (:require [compojure.core :refer :all]
+            [ring.middleware.content-type :refer [wrap-content-type]]
             [ring.middleware.resource :refer [wrap-resource]]
             [ring.middleware.json :refer [wrap-json-response
                                           wrap-json-body
@@ -79,7 +80,7 @@
        (page/html5 {:ng-app "app"}
                    [:head
                     [:meta {:http-equiv "X-UA-Compatible" :content "IE=edge"}]
-                    [:title "== SCR =="]
+                    [:title "== SCROLL =="]
                     (page/include-css "css/bootstrap.min.css")]
                    [:body
                     [:ng-view]
@@ -110,6 +111,7 @@
       wrap-json-body
       wrap-json-params
       wrap-json-response
+      wrap-content-type
       (wrap-resource "public")))
 
 (defn -main []
