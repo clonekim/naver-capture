@@ -22,6 +22,6 @@
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler scr.core/app
          :init scr.sql/init }
-  :uberjar-name "start-0.1.4.jar"
+  :uberjar-name "start-0.1.5.jar"
   :profiles {:uberjar {:aot :all}}
   :main scr.core)

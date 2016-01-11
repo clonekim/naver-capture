@@ -1,4 +1,32 @@
-<table class="table table-bordered">
+<div class="container-fluid">
+	<div>
+		<ul class="nav nav-tabs">
+			<li ng-repeat="i in consonants" ng-class="i== index ? 'active': ''" >
+				<a href="#/archives/{{i}}"><h4>{{i}}</h4></a>
+			</li>
+			<li>
+				<a href="#/find"><h4>검색</h4></a>
+			</li>
+			<li>
+				<a href="#/batch-stat"><h4>Batch 현황</h4></a>
+			</li>
+			<li>
+				<a href="#/"><h4>Batch 등록</h4></a>
+			</li>			
+		</ul>
+
+		<div class="panel-body" ng-if="results.pronuns.length > 0">
+		현재까지 찾은 자음인덱스: 
+			<a ng-repeat="i in results.pronuns" class="btn btn-default" href="#/archives/{{index}}/{{i.pronun}}" ng-class="i.pronun == pronun ? 'active': ''">{{i.pronun}} </a>&nbsp;
+		</div>
+		
+	</div>
+</div>
+
+<div class="panel-body">
+	<div>총: {{results.rows.length||count||0}} 자</div>
+	
+<table class="table table-bordered" ng-if="results.rows.length > 0 && !results.means">
     <tr>
     	<th>자음</th>
         <th>단어</th>
@@ -10,9 +38,9 @@
         <th>부수 이름</th>
         <th>부수 음독</th>
         <th>부수 획수</th>
-        <th>*</th>
+        <th>뜻더보기</th>
     </tr>
-    <tr ng-repeat="i in results">
+    <tr ng-repeat="i in results.rows">
     	<td>{{i.consonant}}</td>
     	<td>{{i.letter}}</td>
     	<td>{{i.theory}}</td>
@@ -23,6 +51,27 @@
  	    <td>{{i.bushou_name}}</td>
  	    <td>{{i.bushou_pronun}}</td>
  	    <td>{{i.bushou_stroke}}</td>
- 	    <td> </td>
-    </tr>
+ 	    <td><button class="btn btn-success" ng-click="getMore(i);">more</button> </td>
+    </tr>    
 </table>
+</div>
+
+
+<div class="modal-dialog" ng-if="results.means.length > 0">
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3>{{results.hanja.letter}}({{results.hanja.pronun}})</h3>
+		</div>
+		<div class="modal-body">
+			<ul ng-if="results.means.length > 0">
+				<li ng-repeat="i in results.means">	{{i.mean}}</li>    
+			</ul>
+		</div>
+		<div class="modal-footer">
+			<button class="btn btn-primary" ng-click="clearMore()"> 닫기</a>		
+		</div>
+	</div>
+</div>
+
+
+

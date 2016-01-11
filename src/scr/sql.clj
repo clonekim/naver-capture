@@ -9,21 +9,21 @@
               :subprotocol "h2:file"
               :subname (str dic-dir (File/separator) "dic") })
 
-
-(defn init []
-  (log/debug "db path --" dic-dir)
-  (log/debug "run ddl -- create table")
-  (if (.exists (File. dic-dir))
-    (log/debug "already databases exists! -- skip")    
+(defn create-schema []
+  (log/debug "run ddl -- create schema")
     (jdbc/db-do-commands db-spec 
                          (jdbc/create-table-ddl :batch_info
                                                 [:id "int primary key auto_increment"]
-                                                [:url "varchar(150)"]
+                                                [:prime_id "int default 0"]
+                                                [:url "varchar(150) unique"]
+                                                [:letter "varchar(5)"]
                                                 [:stat "varchar(20)"]
-                                                [:created "datetime"])
+                                                [:created "datetime"]
+                                                [:exception "varchar"])
 
                          (jdbc/create-table-ddl :hanja
                                                 [:id "int primary key auto_increment"]
+                                                [:batch_id "int"]
                                                 [:consonant "varchar(5)"]
                                                 [:letter "varchar(10)"]
                                                 [:theory "varchar"]
@@ -36,10 +36,16 @@
                                                 [:bushou_stroke "tinyint"]
                                                 [:total_stroke "tinyint"])
 
-                         (jdbc/create-table-ddl :hanja_annotation
-                                                [:id "int primary key auto_increment"]
+                         (jdbc/create-table-ddl :hanja_annotation                                                
                                                 [:hanja_id "int"]
-                                                [:mean "varchar(255)"]))))
+                                                [:mean "varchar(255)"])))
+
+(defn init []
+  (log/debug "db path --" dic-dir)
+  (log/debug "run ddl -- create table")
+  (if (.exists (File. dic-dir))
+    (log/debug "already database exists! -- skip")    
+    (create-schema)))
 
 
 (defn insert-hanja [kv]
@@ -50,10 +56,23 @@
         (jdbc/insert! tx :hanja_annotation {:hanja_id pk :mean (get mean "mean") })))))
 
 
+(defmulti select-hanja class)
 
-(defn select-hanja []
-  (jdbc/query db-spec ["select * from hanja"]))
+(defmethod select-hanja java.lang.String [consonant]
+  (jdbc/query db-spec ["select * from hanja where consonant = ?" consonant]))
 
+(defmethod select-hanja clojure.lang.PersistentVector [v]
+  (jdbc/query db-spec ["select * from hanja where consonant = ? and pronun=?" (first v) (last v)]))
+
+(defmethod select-hanja java.lang.Integer [id]
+  (jdbc/query db-spec ["select * from hanja where id = ?" id]))
+
+
+(defn select-hanja-pronun
+  ([s]
+   (jdbc/query db-spec ["select pronun from hanja where consonant = ? group by pronun order by pronun" s]))
+  ([s0 s1]
+   (jdbc/query db-spec ["select pronun from hanja where cosonant = ? and pronun = ? group by pronun order by pronun" s0 s1])))
 
 
 (defn select-hanja-annotation
@@ -62,9 +81,11 @@
   ([id]
    (jdbc/query db-spec ["select * from hanja_annotation where hanja_id =?" id])))
 
+(defn total-hanja []
+  (first (jdbc/query db-spec ["select count(id) as count from hanja"])))
 
 
-(defn shred []
+(defn drop-schema []
   (log/debug "run ddl -- drop table")
   (jdbc/db-do-commands db-spec
                        (jdbc/drop-table-ddl :hanja)
@@ -84,7 +105,7 @@
   (log/debug "update batch -- " kv)
   (jdbc/with-db-transaction [tx db-spec]
     (jdbc/update! tx :batch_info
-                  {:stat (:stat kv)}
+                  {:stat (:stat kv) :exception (:exception kv)}
                   ["id = ?" (:batch-id kv)])))
 
 

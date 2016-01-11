@@ -20,12 +20,20 @@ module.exports = ['$http', function($http){
 		return $http({ method: 'DELETE', url: '/api/reset'});	
 	};
 
-	this.getDics = function() {
-		return $http({ method: 'GET', url: '/api/dic'});
+	this.getCount = function() {
+		return $http({ method: 'GET', url: '/api/archive'});
+	};
+		
+	this.searchByIndex = function(idx) {
+		return $http({ method: 'GET', url: '/api/archive/' + idx});
 	};
 	
-	this.getLetterMeans = function() {
-		return $http({ method: 'GET', url: '/api/dic-annot'});
+	this.searchByIndexWithLetter = function(idx1, idx2) {
+		return $http({ method: 'GET', url: '/api/archive/' + idx1 + '/' + idx2});
 	};
 	
+	this.getLetterMeans = function(id) {
+		return $http({ method: 'GET', url: '/api/more-means/' + id});
+	};
+		
 }];

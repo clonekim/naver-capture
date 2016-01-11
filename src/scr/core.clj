@@ -17,6 +17,7 @@
   (:gen-class))
 
 (defonce tout (* 1000 20))
+(defonce hanja-tooltip-url "http://hanja.naver.com/tooltip.nhn?q=")
 
 (defn get-doc
   ([url]
@@ -52,27 +53,24 @@
 
 
 (defn go-chan [v kv]
-  (let [http-chan (async/chan 10)]
-    (doseq [i v]
-      (async/go 
-        (async/>!! http-chan 
-                   (let [url "http://hanja.naver.com/tooltip.nhn?q="
-                         q (str (.charAt i 0))
-                         url-en (str url (urlparam-encode q))
-                         batch-id (sql/insert-batch {:url url-en :stat "START" :created (java.util.Date.)})]
-                     (merge (assoc kv :batch-id batch-id)
-                            (parse-item (fetch url q))))))
-      (async/go 
-        (do 
-          (let [m (async/<!! http-chan)]
-            (sql/insert-hanja (dissoc m :batch-id))
-            (sql/update-batch {:batch-id (:batch-id m) :stat "END" })))))))
+  (doseq [i v]
+    (async/go 
+      (let [q (str (.charAt i 0))
+            batch-id (sql/insert-batch {:prime_id (:prime-id kv) :letter q :url (str hanja-tooltip-url (urlparam-encode q)) :stat "START" :created (java.util.Date.)})]        
+        (try
+          (let [parsed (parse-item (fetch hanja-tooltip-url q))]
+            (sql/insert-hanja (assoc parsed :batch_id batch-id :consonant (:consonant kv) ))
+            (sql/update-batch {:batch-id batch-id :stat "END"}))
+          (catch Exception e
+            (sql/update-batch {:batch-id batch-id :stat "ERROR" :exception (.getMessage e)})))))))
+      
 
 
 (defn add-batch [url consonant]
   (let [pk (sql/insert-batch {:url url :stat "REGISTERED" :created (java.util.Date.)})]
     (log/debug "batch id -- " pk)
-    (go-chan (fetch url) {:consonant consonant})
+    (let [p (go-chan (fetch url) {:consonant consonant :prime-id pk})]
+      (log/debug "chan -- " p))
     pk))
 
 (defroutes app-routes
@@ -86,11 +84,20 @@
                     [:ng-view]
                     (page/include-js "js/app.js")]))
 
-  (GET "/api/dic" []
-       (log/debug "query dictionary --")
-       (sql/select-hanja))
+  (GET "/api/archive" []
+       (response (sql/total-hanja)))
 
-  (GET "/api/dic-annot" [id]
+  (GET "/api/archive/:index" [index]
+       (log/debug "query archive --" index)
+       (response {:pronuns (sql/select-hanja-pronun index)
+                   :rows (sql/select-hanja index)}))
+  
+  (GET "/api/archive/:index1/:index2" [index1 index2]
+       (log/debug "query archive --" index1 ", " index2)
+       (response {:pronuns (sql/select-hanja-pronun index1)
+                  :rows (sql/select-hanja [index1 index2])}))
+
+  (GET "/api/more-means/:id" [id]
        (sql/select-hanja-annotation id))
 
   (GET "/api/batch-stat" []
@@ -103,7 +110,10 @@
         (response {:batch_id (add-batch url consonant)}))
 
   (POST "/api/reset" []
-        (response {:stat (sql/shred)})))
+        (log/debug "reset schema!!")
+        (response {:stat (do 
+                           (sql/drop-schema)
+                           (sql/create-schema))})))
 
 
 (def app
@@ -111,8 +121,8 @@
       wrap-json-body
       wrap-json-params
       wrap-json-response
-      wrap-content-type
-      (wrap-resource "public")))
+      (wrap-resource "public")
+      wrap-content-type))
 
 (defn -main []
   (log/info "listen on port 5678")

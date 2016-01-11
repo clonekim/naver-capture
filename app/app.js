@@ -16,6 +16,14 @@ angular
 		.when('/archives', {
 			templateUrl: 'views/archive.html',
 			controller: 'archiveCtrl'
+		})
+		.when('/archives/:id', {
+			templateUrl: 'views/archive.html',
+			controller: 'archiveCtrl'
+		})
+		.when('/archives/:id/:pronun', {
+			templateUrl: 'views/archive.html',
+			controller: 'archiveCtrl'
 		})		
 		.when('/batch-stat', {
 			templateUrl: 'views/batch.html',
