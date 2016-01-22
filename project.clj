@@ -1,4 +1,4 @@
-(defproject scr "0.1.0-SNAPSHOT"
+(defproject scr "0.3"
   :description "Naver Dictionary Scroller"
   :url "http://example.com/FIXME"
   :license {:name "Eclipse Public License"
@@ -15,13 +15,14 @@
                  [org.jsoup/jsoup "1.8.3"]
                  [com.h2database/h2 "1.3.176"]
                  [org.slf4j/slf4j-log4j12 "1.7.13"]
-                 [log4j/log4j "1.2.17" :exclusions [javax.mail/mail
-                                                    javax.jms/jms
-                                                    com.sun.jmdk/jmxtools
-                                                    com.sun.jmx/jmxri]]]
+                 [log4j/log4j "1.2.17"]]
   :plugins [[lein-ring "0.9.7"]]
   :ring {:handler scr.core/app
          :init scr.sql/init }
-  :uberjar-name "start-0.1.5.jar"
-  :profiles {:uberjar {:aot :all}}
+  :profiles {:uberjar {:aot :all
+                       :omit-source true
+                       :uberjar-name "start-%s.jar"
+                       :jar-name "start-lib-%s.jar"
+                       :uberjar-exclustions [#"META-INF/leiningen"
+                                             #"META-INF/maven"]}}
   :main scr.core)
