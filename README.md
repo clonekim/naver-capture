@@ -1,15 +1,15 @@
-# SCR(Scroller)
+# Naver-capture
 
-네이버 한자사전 웹페이지 스크롤러 툴임
+네이버 한자사전 캡쳐 처리  
 UI는 AngularJS 로 구성됨
 
 ## Usage
 
 준비물
 
-0. jdk8
+1. jdk8
 1. node.js
-2. leiningen
+1. leiningen
 
 ### 클라이언트 소스(자바스크립트) 컴파일
 
